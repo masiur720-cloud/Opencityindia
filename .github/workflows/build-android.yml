@@ -52,7 +52,7 @@ jobs:
           docker run --rm \
             -v "$PWD/source/OpenCityPrototype:/project" \
             -w /project \
-            barichello/godot-ci:4.3 \
+            barichello/godot-ci:\
             godot --headless --editor --path /project --import
 
           docker run --rm \

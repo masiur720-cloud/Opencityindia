@@ -1,0 +1,70 @@
+
+name: Build Open City India APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install unzip
+        run: sudo apt-get update && sudo apt-get install -y unzip
+
+      - name: Prepare Android export
+        run: |
+          mkdir source
+          unzip -q OpenCityIndiaPrototype.zip -d source
+          cd source/OpenCityPrototype
+
+          cat > export_presets.cfg <<'PRESET'
+          [preset.0]
+          name="Android"
+          platform="Android"
+          runnable=true
+          dedicated_server=false
+          export_filter="all_resources"
+          include_filter=""
+          exclude_filter=""
+          export_path="OpenCityIndia.apk"
+
+          [preset.0.options]
+          custom_template/debug=""
+          custom_template/release=""
+          gradle_build/use_gradle_build=false
+          architectures/armeabi-v7a=false
+          architectures/arm64-v8a=true
+          architectures/x86=false
+          architectures/x86_64=false
+          package/unique_name="com.opencityindia.game"
+          package/name="Open City India"
+          package/signed=true
+          screen/immersive_mode=true
+          permissions/internet=false
+          PRESET
+
+      - name: Export APK
+        run: |
+          docker run --rm \
+            -v "$PWD/source/OpenCityPrototype:/project" \
+            -w /project \
+            barichello/godot-ci:4.3.0 \
+            godot --headless --editor --path /project --import
+
+          docker run --rm \
+            -v "$PWD/source/OpenCityPrototype:/project" \
+            -w /project \
+            barichello/godot-ci:4.3.0 \
+            godot --headless --path /project \
+            --export-debug Android /project/OpenCityIndia.apk
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Open-City-India-APK
+          path: source/OpenCityPrototype/OpenCityIndia.apk
+          

@@ -52,13 +52,13 @@ jobs:
           docker run --rm \
             -v "$PWD/source/OpenCityPrototype:/project" \
             -w /project \
-            barichello/godot-ci:4.3.0 \
+            barichello/godot-ci:4.3 \
             godot --headless --editor --path /project --import
 
           docker run --rm \
             -v "$PWD/source/OpenCityPrototype:/project" \
             -w /project \
-            barichello/godot-ci:4.3.0 \
+            barichello/godot-ci:4.3. \
             godot --headless --path /project \
             --export-debug Android /project/OpenCityIndia.apk
 
